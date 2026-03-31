@@ -38,8 +38,7 @@ binds:
         apiKey:
           mode: strict
           keys:
-          - key:
-              inline: "garza-gw-V3JVUiLSPy6k1zNgSCn6UZck5emKmqcPxJ193IYMUn8"
+          - key: "garza-gw-V3JVUiLSPy6k1zNgSCn6UZck5emKmqcPxJ193IYMUn8"
       backends:
       - mcp:
           targets:
