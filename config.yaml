@@ -3,7 +3,8 @@ binds:
 - port: 3000
   listeners:
   - routes:
-    - name: mcp-route
+    # 1. MCP Tool Layer
+    - name: mcp-tools
       matches:
       - path:
           pathPrefix: /mcp
@@ -33,3 +34,44 @@ binds:
           - name: fastio
             mcp:
               host: https://mcp.fast.io/mcp
+
+    # 2. Agent Registry (Direct Response)
+    - name: agent-registry
+      matches:
+      - path:
+          exact: /registry
+      policies:
+        cors:
+          allowOrigins:
+          - "*"
+      backends:
+      - directResponse:
+          status: 200
+          body: >
+            {
+              "agents": [
+                {
+                  "name": "researcher",
+                  "description": "Deep research and analysis agent",
+                  "endpoint": "https://agentgateway.garza-os.com/agents/researcher"
+                },
+                {
+                  "name": "coder",
+                  "description": "Software development and debugging agent",
+                  "endpoint": "https://agentgateway.garza-os.com/agents/coder"
+                }
+              ]
+            }
+
+    # 3. A2A Routing (Example for a Researcher Agent)
+    - name: a2a-researcher
+      matches:
+      - path:
+          pathPrefix: /agents/researcher
+      policies:
+        a2a: {}
+        urlRewrite:
+          path:
+            prefix: /
+      backends:
+      - host: https://researcher-agent-production.up.railway.app
