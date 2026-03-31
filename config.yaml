@@ -1,7 +1,8 @@
 # yaml-language-server: $schema=https://agentgateway.dev/schema/config
-adminAddr: 127.0.0.1:15000
-statsAddr: 127.0.0.1:15020
-readinessAddr: 127.0.0.1:15021
+config:
+  adminAddr: 127.0.0.1:15000
+  statsAddr: 127.0.0.1:15020
+  readinessAddr: 127.0.0.1:15021
 binds:
 - port: 3000
   listeners:
