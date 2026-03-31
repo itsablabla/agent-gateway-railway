@@ -8,6 +8,16 @@ binds:
 - port: 3000
   listeners:
   - routes:
+    # 0. Health Check
+    - name: health-check
+      matches:
+      - path:
+          exact: /
+      policies:
+        directResponse:
+          status: 200
+          body: "Agent Gateway is running"
+
     # 1. MCP Tool Layer
     - name: mcp-tools
       matches:
