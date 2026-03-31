@@ -73,4 +73,4 @@ binds:
           path:
             prefix: /
       backends:
-      - host: https://researcher-agent-production.up.railway.app
+      - host: researcher-agent-production.up.railway.app:443
