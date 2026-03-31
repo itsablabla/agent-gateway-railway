@@ -10,7 +10,7 @@ RUN curl -fsSL https://github.com/agentgateway/agentgateway/releases/download/v1
 # Copy default config
 COPY config.yaml /config.yaml
 
-EXPOSE 3000 15000
+EXPOSE 3000
 
 ENV ADMIN_ADDR=0.0.0.0:15000
 
