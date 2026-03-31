@@ -14,4 +14,4 @@ EXPOSE 3000
 
 ENV ADMIN_ADDR=0.0.0.0:15000
 
-CMD ["/usr/local/bin/agentgateway", "-f", "/config.yaml"]
+CMD ["sh", "-c", "unset PORT && exec /usr/local/bin/agentgateway -f /config.yaml"]
