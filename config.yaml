@@ -19,6 +19,7 @@ binds:
           body: "Agent Gateway is running"
 
     # 1. MCP Tool Layer — protected by GARZA OS master API key
+    # Auth: Authorization: Bearer garza-gw-V3JVUiLSPy6k1zNgSCn6UZck5emKmqcPxJ193IYMUn8
     - name: mcp-tools
       matches:
       - path:
@@ -33,12 +34,17 @@ binds:
           - cache-control
           - authorization
           - x-api-key
+          - accept
           exposeHeaders:
           - "Mcp-Session-Id"
         apiKey:
           mode: strict
           keys:
           - key: "garza-gw-V3JVUiLSPy6k1zNgSCn6UZck5emKmqcPxJ193IYMUn8"
+        # Strip the gateway API key from upstream requests so backends don't see it
+        requestHeaderModifier:
+          remove:
+          - authorization
       backends:
       - mcp:
           targets:
@@ -96,7 +102,7 @@ binds:
               ],
               "mcp": {
                 "endpoint": "https://agentgateway.garza-os.com/mcp",
-                "auth": "Bearer <garza-gateway-api-key>",
+                "auth": "Authorization: Bearer garza-gw-V3JVUiLSPy6k1zNgSCn6UZck5emKmqcPxJ193IYMUn8",
                 "tools": ["bitwarden", "arcade", "rube", "fastio"]
               }
             }
