@@ -44,8 +44,7 @@ binds:
         cors:
           allowOrigins:
           - "*"
-      backends:
-      - directResponse:
+        directResponse:
           status: 200
           body: >
             {
