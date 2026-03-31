@@ -18,7 +18,7 @@ binds:
           status: 200
           body: "Agent Gateway is running"
 
-    # 1. MCP Tool Layer
+    # 1. MCP Tool Layer — protected by GARZA OS master API key
     - name: mcp-tools
       matches:
       - path:
@@ -32,8 +32,14 @@ binds:
           - content-type
           - cache-control
           - authorization
+          - x-api-key
           exposeHeaders:
           - "Mcp-Session-Id"
+        apiKey:
+          mode: strict
+          keys:
+          - key:
+              inline: "garza-gw-V3JVUiLSPy6k1zNgSCn6UZck5emKmqcPxJ193IYMUn8"
       backends:
       - mcp:
           targets:
@@ -43,6 +49,10 @@ binds:
           - name: arcade
             mcp:
               host: https://api.arcade.dev/mcp/gw_3Ab44vv0XtJvS1aGggZrUfyv5kH
+            policies:
+              requestHeaderModifier:
+                set:
+                  Authorization: "Bearer arc_proj1DeCRvyUd7d3YTPiJBddokA6hGHbyRdVT2CGC2kCxj3yK5Yg5g4"
           - name: rube
             mcp:
               host: https://rube.app/mcp
@@ -50,7 +60,7 @@ binds:
             mcp:
               host: https://mcp.fast.io/mcp
 
-    # 2. Agent Registry (Direct Response)
+    # 2. Agent Registry (Direct Response — public, no auth required)
     - name: agent-registry
       matches:
       - path:
@@ -63,29 +73,50 @@ binds:
           status: 200
           body: >
             {
+              "version": "1.0",
+              "gateway": "https://agentgateway.garza-os.com",
               "agents": [
                 {
                   "name": "researcher",
                   "description": "Deep research and analysis agent",
-                  "endpoint": "https://agentgateway.garza-os.com/agents/researcher"
+                  "endpoint": "https://agentgateway.garza-os.com/agents/researcher",
+                  "protocol": "a2a"
                 },
                 {
                   "name": "coder",
                   "description": "Software development and debugging agent",
-                  "endpoint": "https://agentgateway.garza-os.com/agents/coder"
+                  "endpoint": "https://agentgateway.garza-os.com/agents/coder",
+                  "protocol": "a2a"
+                },
+                {
+                  "name": "manus",
+                  "description": "Autonomous general AI agent (GARZA OS primary)",
+                  "endpoint": "https://agentgateway.garza-os.com/agents/manus",
+                  "protocol": "a2a"
                 }
-              ]
+              ],
+              "mcp": {
+                "endpoint": "https://agentgateway.garza-os.com/mcp",
+                "auth": "Bearer <garza-gateway-api-key>",
+                "tools": ["bitwarden", "arcade", "rube", "fastio"]
+              }
             }
 
-    # 3. A2A Routing (Example for a Researcher Agent)
+    # 3. A2A Agent Routes
     - name: a2a-researcher
       matches:
       - path:
           pathPrefix: /agents/researcher
       policies:
         a2a: {}
-        urlRewrite:
-          path:
-            prefix: /
       backends:
       - host: researcher-agent-production.up.railway.app:443
+
+    - name: a2a-coder
+      matches:
+      - path:
+          pathPrefix: /agents/coder
+      policies:
+        a2a: {}
+      backends:
+      - host: coder-agent-production.up.railway.app:443
