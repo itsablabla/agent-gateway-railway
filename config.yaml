@@ -10,6 +10,43 @@ binds:
           - mcp-protocol-version
           - content-type
           - cache-control
+          - authorization
           exposeHeaders:
           - "Mcp-Session-Id"
-      backends: []
+      backends:
+      - name: bitwarden
+        mcp:
+          targets:
+          - name: bitwarden
+            sse:
+              host: bitwarden-mcp-server-production.up.railway.app
+              port: 443
+              path: /mcp?apikey=garza-bw-mcp-2026
+              tls: {}
+      - name: arcade
+        mcp:
+          targets:
+          - name: arcade
+            sse:
+              host: api.arcade.dev
+              port: 443
+              path: /mcp/gw_3Ab44vv0XtJvS1aGggZrUfyv5kH
+              tls: {}
+      - name: rube
+        mcp:
+          targets:
+          - name: rube
+            sse:
+              host: rube.app
+              port: 443
+              path: /mcp
+              tls: {}
+      - name: fastio
+        mcp:
+          targets:
+          - name: fastio
+            sse:
+              host: mcp.fast.io
+              port: 443
+              path: /mcp
+              tls: {}
