@@ -10,7 +10,7 @@ unset PORT
 sed -i "s/port: 3000/port: $PROXY_PORT/g" /config.yaml
 
 # Set admin UI to a different port
-export ADMIN_ADDR="0.0.0.0:15000"
+export ADMIN_ADDR="127.0.0.1:15000"
 
 echo "Starting agentgateway with proxy on port $PROXY_PORT and admin on 15000"
 exec /usr/local/bin/agentgateway -f /config.yaml
