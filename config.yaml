@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=https://agentgateway.dev/schema/config
 binds:
-- port: 3000
+- port: 15000
   listeners:
   - routes:
     - policies:
