@@ -1,5 +1,6 @@
 # yaml-language-server: $schema=https://agentgateway.dev/schema/config
 config:
+  enableIpv6: false
   adminAddr: 127.0.0.1:15000
   statsAddr: 127.0.0.1:15020
   readinessAddr: 127.0.0.1:15021
