@@ -1,8 +1,15 @@
-static_resources:
+binds:
+- port: 3000
   listeners:
-  - name: default
-    protocol: HTTP
-    address:
-      socket_address:
-        address: 0.0.0.0
-        port_value: 3000
+  - routes:
+    - policies:
+        cors:
+          allowOrigins:
+          - "*"
+          allowHeaders:
+          - mcp-protocol-version
+          - content-type
+          - cache-control
+          exposeHeaders:
+          - "Mcp-Session-Id"
+      backends: []
