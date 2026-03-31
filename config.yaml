@@ -3,7 +3,11 @@ binds:
 - port: 3000
   listeners:
   - routes:
-    - policies:
+    - name: mcp-route
+      matches:
+      - path:
+          pathPrefix: /mcp
+      policies:
         cors:
           allowOrigins:
           - "*"
