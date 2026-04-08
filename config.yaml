@@ -8,18 +8,8 @@ binds:
 - port: 3000
   listeners:
   - routes:
-    # 0. Health Check
-    - name: health-check
-      matches:
-      - path:
-          exact: /
-      policies:
-        directResponse:
-          status: 200
-          body: "Agent Gateway is running"
-
     # 1. MCP Tool Layer — protected by GARZA OS master API key
-    # Auth: Authorization: Bearer garza-gw-V3JVUiLSPy6k1zNgSCn6UZck5emKmqcPxJ193IYMUn8
+    # Auth: Authorization: Bearer 4541124ec411620fced0880017594e16e41008269433ae34
     - name: mcp-tools
       matches:
       - path:
@@ -30,6 +20,7 @@ binds:
           - "*"
           allowHeaders:
           - mcp-protocol-version
+          - mcp-session-id
           - content-type
           - cache-control
           - authorization
@@ -37,91 +28,42 @@ binds:
           - accept
           exposeHeaders:
           - "Mcp-Session-Id"
+          - "Mcp-Protocol-Version"
+          maxAge: "3600"
         apiKey:
           mode: strict
           keys:
-          - key: "garza-gw-V3JVUiLSPy6k1zNgSCn6UZck5emKmqcPxJ193IYMUn8"
-        # Strip the gateway API key from upstream requests so backends don't see it
+          - key: "4541124ec411620fced0880017594e16e41008269433ae34"
         requestHeaderModifier:
           remove:
           - authorization
+        localRateLimit:
+        - maxTokens: 100
+          tokensPerFill: 100
+          fillInterval: 1m
+          type: requests
       backends:
       - mcp:
+          stateful: true
           targets:
-          - name: bitwarden
+          - name: protonmail
             mcp:
-              host: https://bitwarden-mcp-server-production.up.railway.app/mcp?apikey=garza-bw-mcp-2026
-          - name: arcade
+              host: http://127.0.0.1:8101/mcp
+          - name: vault
             mcp:
-              host: https://api.arcade.dev/mcp/gw_3Ab44vv0XtJvS1aGggZrUfyv5kH
-            policies:
-              requestHeaderModifier:
-                set:
-                  Authorization: "Bearer arc_proj1DeCRvyUd7d3YTPiJBddokA6hGHbyRdVT2CGC2kCxj3yK5Yg5g4"
-          - name: rube
+              host: http://127.0.0.1:8334/mcp
+          - name: mattermost
             mcp:
-              host: https://rube.app/mcp
-          - name: fastio
+              host: http://127.0.0.1:8900/mcp
+          - name: beeper
+            openAPI:
+              host: http://127.0.0.1:8400
+          - name: gwmanager
             mcp:
-              host: https://mcp.fast.io/mcp
-
-    # 2. Agent Registry (Direct Response — public, no auth required)
-    - name: agent-registry
-      matches:
-      - path:
-          exact: /registry
-      policies:
-        cors:
-          allowOrigins:
-          - "*"
-        directResponse:
-          status: 200
-          body: >
-            {
-              "version": "1.0",
-              "gateway": "https://agentgateway.garza-os.com",
-              "agents": [
-                {
-                  "name": "researcher",
-                  "description": "Deep research and analysis agent",
-                  "endpoint": "https://agentgateway.garza-os.com/agents/researcher",
-                  "protocol": "a2a"
-                },
-                {
-                  "name": "coder",
-                  "description": "Software development and debugging agent",
-                  "endpoint": "https://agentgateway.garza-os.com/agents/coder",
-                  "protocol": "a2a"
-                },
-                {
-                  "name": "manus",
-                  "description": "Autonomous general AI agent (GARZA OS primary)",
-                  "endpoint": "https://agentgateway.garza-os.com/agents/manus",
-                  "protocol": "a2a"
-                }
-              ],
-              "mcp": {
-                "endpoint": "https://agentgateway.garza-os.com/mcp",
-                "auth": "Authorization: Bearer garza-gw-V3JVUiLSPy6k1zNgSCn6UZck5emKmqcPxJ193IYMUn8",
-                "tools": ["bitwarden", "arcade", "rube", "fastio"]
-              }
-            }
-
-    # 3. A2A Agent Routes
-    - name: a2a-researcher
-      matches:
-      - path:
-          pathPrefix: /agents/researcher
-      policies:
-        a2a: {}
-      backends:
-      - host: researcher-agent-production.up.railway.app:443
-
-    - name: a2a-coder
-      matches:
-      - path:
-          pathPrefix: /agents/coder
-      policies:
-        a2a: {}
-      backends:
-      - host: coder-agent-production.up.railway.app:443
+              host: http://127.0.0.1:8800/mcp
+          - name: railway
+            mcp:
+              host: http://127.0.0.1:8850/mcp
+          - name: hyperbrowser
+            mcp:
+              host: https://hyperbrowser-mcp-server-production.up.railway.app/mcp
